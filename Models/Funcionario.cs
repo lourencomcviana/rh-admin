@@ -20,7 +20,7 @@ namespace rh_admin.Models
         
         public ICollection<Telefone> Telefones { get; set; } 
         
-        private Funcionario Lider { get; set; }
+        public Funcionario Lider { get; set; }
         // não vai pro dto
         [Required]
         private String Senha { get; set; }

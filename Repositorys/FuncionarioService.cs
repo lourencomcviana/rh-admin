@@ -43,6 +43,11 @@ namespace rh_admin.Repositorys
         {
             return await _repository.FindAll();
         }
+        
+        public async Task<List<Funcionario>> Filter(FuncionarioQueryDto funcionarioQueryDto)
+        {
+            return await _repository.Filter(funcionarioQueryDto);
+        }
 
         public async  Task<Funcionario> Create<T> (T funcionarioDto)
             where T : FuncionarioDto
@@ -51,10 +56,26 @@ namespace rh_admin.Repositorys
             {
                 throw  new ExistsOrNotException($"{funcionarioDto.NumeroChapa} já exisete");
             }
-
+            
+            
             var funcionario = Mapper.Map<Funcionario>(funcionarioDto);
-            DesagregarTelefones(funcionario.Telefones);
+            
+            if (funcionario.Lider != null)
+            { 
+                Funcionario lider = await _repository.FindById(funcionario.Lider.NumeroChapa);
+                if (lider == null)
+                {
+                    throw  new ExistsOrNotException($"líder {funcionario.Lider.NumeroChapa} não existe");
+                }
 
+                funcionario.Lider = lider;
+
+            }
+            
+            DesagregarTelefones(funcionario.Telefones);
+            
+            
+            
             funcionario.DataCadastro = DateTime.Now;
             await _repository.CreateAsync(funcionario);
 
@@ -111,10 +132,24 @@ namespace rh_admin.Repositorys
         
         public static void AddMappings(IMapperConfigurationExpression cfg)
         {
-            cfg.CreateMap<Funcionario,FuncionarioDto>();
+            cfg.CreateMap<Funcionario,FuncionarioDto>()
+                .ForMember(
+                    dest => dest.Lider,
+                    opt =>
+                    {
+                        opt.MapFrom((item, funcionario) => {
+                            if (item.Lider != null)
+                            {
+                                return item.Lider.NumeroChapa;
+                            }
+
+                            return null;
+                        });
+                    })
+                ;
             cfg.CreateMap<FuncionarioDto, Funcionario>()
                 .ForMember(
-                dest => dest.DataCadastro,
+                    dest => dest.DataCadastro,
                     opt =>
                     {
                         opt.MapFrom(item => DateTime.Now);
@@ -123,15 +158,25 @@ namespace rh_admin.Repositorys
                     dest => dest.Telefones,
                     opt =>
                     {
-                        opt.MapFrom((item,funcionario) =>
+                        opt.MapFrom((item, funcionario) =>
                             item.Telefone
-                                .Select(numero => new Telefone(){ Numero = numero, Funcionario = funcionario})
+                                .Select(numero => new Telefone() {Numero = numero, Funcionario = funcionario})
                                 .ToList()
-                            );
-                    });
+                        );
+                    })
+                .ForMember(
+                    dest => dest.Lider,
+                    opt =>
+                    {
+                        opt.MapFrom((item, funcionario) =>
+                            new Funcionario() {NumeroChapa = item.Lider}
+                        );
+                    })
+                ;
 
             cfg.CreateMap<Funcionario, FuncionarioRetornoDto>()
-                .IncludeBase<Funcionario, FuncionarioDto>();
+                .IncludeBase<Funcionario, FuncionarioDto>()
+                    ;
         }
         
         private static MapperConfiguration MapperConfigurationFactory()

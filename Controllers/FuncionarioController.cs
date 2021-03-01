@@ -23,9 +23,9 @@ namespace rh_admin.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<FuncionarioRetornoDto>>> Get()
+        public async Task<ActionResult<List<FuncionarioRetornoDto>>> Get([FromQuery] FuncionarioQueryDto funcionarioDto)
         {
-            var list = (await _funcionarioService.FindAll())
+            var list = (await _funcionarioService.Filter(funcionarioDto))
                 .Select(item => _funcionarioService.Mapper.Map<FuncionarioRetornoDto>(item))
                 .ToList();
 
@@ -38,7 +38,7 @@ namespace rh_admin.Controllers
         }
         
         [HttpGet("{id}")]
-        public async Task<ActionResult<FuncionarioRetornoDto>> Get(String id)
+        public async Task<ActionResult<FuncionarioRetornoDto>> GetOne(String id)
         {
             FuncionarioRetornoDto funcionarioRetorno = _funcionarioService
                 .Mapper.Map<FuncionarioRetornoDto>(
@@ -62,7 +62,7 @@ namespace rh_admin.Controllers
                     .Mapper.Map<FuncionarioRetornoDto>(
                         await _funcionarioService.Create(funcionarioDto)
                     );
-                return CreatedAtAction(nameof(GetFuncionario), new { id = funcionarioRetorno.NumeroChapa }, funcionarioRetorno);
+                return CreatedAtAction(nameof(GetOne), new { id = funcionarioRetorno.NumeroChapa }, funcionarioRetorno);
             }
             catch (ExistsOrNotException e)
             {

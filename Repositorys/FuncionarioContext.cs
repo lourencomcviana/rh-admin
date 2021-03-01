@@ -17,6 +17,7 @@ namespace rh_admin.Repositorys
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+         
             Telefone telefone = new Telefone();
             telefone.Numero = "9988623028";
             //GUESTS

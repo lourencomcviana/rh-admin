@@ -43,6 +43,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Migrations/CHANGELOG.md">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/Models/Funcionario.cs">
           <value>
             <set />
@@ -84,6 +89,16 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/Startup.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/TestRhAdmin/obj/Debug/netcoreapp3.1/TestRhAdmin.AssemblyInfo.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Util.cs">
           <value>
             <set />
           </value>

@@ -3,3 +3,5 @@
 - `dotnet ef database update`
 - `dotnet ef migrations add "AdicaoTelefones"`
 - `dotnet ef database update`
+- `dotnet ef migrations add "AdicaoLider"`
+- `dotnet ef database update`

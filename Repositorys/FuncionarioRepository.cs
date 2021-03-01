@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,18 @@ namespace rh_admin.Repositorys
             return await base.Context.Funcionarios
                 .Include(x =>x.Telefones)
                 .FirstOrDefaultAsync(x => x.NumeroChapa.Equals(id));
+        }
+
+        public async Task<List<Funcionario>> Filter(FuncionarioQueryDto funcionarioQueryDto)
+        {
+            return await Context.Funcionarios
+                .Include(x => x.Telefones)
+                .Where(item => funcionarioQueryDto.NumeroChapa ==null || funcionarioQueryDto.NumeroChapa.Equals(item.NumeroChapa))
+                .Where(item => funcionarioQueryDto.Nome ==null || funcionarioQueryDto.Nome.ToLower().Contains(funcionarioQueryDto.Nome.ToLower()))
+                .Where(item => funcionarioQueryDto.Sobrenome ==null || funcionarioQueryDto.Sobrenome.ToLower().Contains(funcionarioQueryDto.Sobrenome.ToLower()))
+                .Where(item => funcionarioQueryDto.Email ==null || funcionarioQueryDto.Email.Equals(funcionarioQueryDto.Email))
+                .Where(item => funcionarioQueryDto.Lider ==null || false)
+                .ToListAsync();
         }
         
         // qualquer implementação de consulta que for necessaria
@@ -72,6 +85,7 @@ namespace rh_admin.Repositorys
     
     public interface  IFuncionarioRepository :IRepository<Funcionario,String>
     {
+        public Task<List<Funcionario>> Filter(FuncionarioQueryDto funcionarioQueryDto);
     }
     
     

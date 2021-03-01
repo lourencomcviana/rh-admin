@@ -8,23 +8,40 @@ using Newtonsoft.Json;
 
 namespace rh_admin
 {
-    public class FuncionarioDto
+    
+    public  abstract class FuncionarioBaseDto
+    {
+        
+        public virtual  String NumeroChapa { get; set; }
+        public virtual  String Nome { get; set; }
+        public virtual  String Sobrenome { get; set; }
+        public virtual  String Email { get; set; }
+        public virtual  String Lider { get; set; }
+    }
+    
+       
+    public class FuncionarioQueryDto : FuncionarioBaseDto
+    {
+    }
+    
+    public class FuncionarioDto : FuncionarioBaseDto
     {
         [RegularExpression("\\d+")]
-        public String NumeroChapa { get; set; }
+        public override String NumeroChapa { get; set; }
         [Required]
-        public String Nome { get; set; }
+        public override String Nome { get; set; }
         [Required]
-        public String Sobrenome { get; set; }
+        public override String Sobrenome { get; set; }
         [EmailAddress]
         [Required]
-        public String Email { get; set; }
+        public override String Email { get; set; }
         
         [ValidarCadaTelefone]
         public List<String> Telefone { get; set; }
         
-        public String Lider { get; set; }
+        public override String Lider { get; set; }
     }
+ 
     
     public class FuncionarioRetornoDto : FuncionarioDto
     {
@@ -36,7 +53,6 @@ namespace rh_admin
         [Required] public String Senha { get; set; }
 
     }
-    
     
     public class ValidarCadaTelefone : ValidationAttribute
     {
