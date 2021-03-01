@@ -8,57 +8,57 @@ namespace rh_admin.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Telefone",
-                table: "Funcionarios");
+                "Telefone",
+                "Funcionarios");
 
             migrationBuilder.CreateTable(
-                name: "Telefone",
-                columns: table => new
+                "Telefone",
+                table => new
                 {
-                    Numero = table.Column<string>(type: "TEXT", nullable: false),
-                    FuncionarioNumeroChapa = table.Column<string>(type: "TEXT", nullable: false)
+                    Numero = table.Column<string>("TEXT", nullable: false),
+                    FuncionarioNumeroChapa = table.Column<string>("TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Telefone", x => x.Numero);
                     table.ForeignKey(
-                        name: "FK_Telefone_Funcionarios_FuncionarioNumeroChapa",
-                        column: x => x.FuncionarioNumeroChapa,
-                        principalTable: "Funcionarios",
-                        principalColumn: "NumeroChapa",
+                        "FK_Telefone_Funcionarios_FuncionarioNumeroChapa",
+                        x => x.FuncionarioNumeroChapa,
+                        "Funcionarios",
+                        "NumeroChapa",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.UpdateData(
-                table: "Funcionarios",
-                keyColumn: "NumeroChapa",
-                keyValue: "11",
-                column: "DataCadastro",
-                value: new DateTime(2021, 2, 27, 16, 21, 7, 654, DateTimeKind.Local).AddTicks(1265));
+                "Funcionarios",
+                "NumeroChapa",
+                "11",
+                "DataCadastro",
+                new DateTime(2021, 2, 27, 16, 21, 7, 654, DateTimeKind.Local).AddTicks(1265));
 
             migrationBuilder.CreateIndex(
-                name: "IX_Telefone_FuncionarioNumeroChapa",
-                table: "Telefone",
-                column: "FuncionarioNumeroChapa");
+                "IX_Telefone_FuncionarioNumeroChapa",
+                "Telefone",
+                "FuncionarioNumeroChapa");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Telefone");
+                "Telefone");
 
             migrationBuilder.AddColumn<string>(
-                name: "Telefone",
-                table: "Funcionarios",
-                type: "TEXT",
+                "Telefone",
+                "Funcionarios",
+                "TEXT",
                 nullable: true);
 
             migrationBuilder.UpdateData(
-                table: "Funcionarios",
-                keyColumn: "NumeroChapa",
-                keyValue: "11",
-                column: "DataCadastro",
-                value: new DateTime(2021, 2, 27, 15, 48, 50, 199, DateTimeKind.Local).AddTicks(7183));
+                "Funcionarios",
+                "NumeroChapa",
+                "11",
+                "DataCadastro",
+                new DateTime(2021, 2, 27, 15, 48, 50, 199, DateTimeKind.Local).AddTicks(7183));
         }
     }
 }

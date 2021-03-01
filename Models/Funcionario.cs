@@ -6,33 +6,26 @@ namespace rh_admin.Models
 {
     public class Funcionario
     {
-        [RegularExpression("\\d+")]
-        [Key]
-        public String NumeroChapa { get; set; }
-        [Required]
-        public String Nome { get; set; }
-        [Required]
-        public String Sobrenome { get; set; }
-        
-        
-        [Required]
-        public String Email { get; set; }
-        
-        public ICollection<Telefone> Telefones { get; set; } 
-        
+        [RegularExpression("\\d+")] [Key] public string NumeroChapa { get; set; }
+
+        [Required] public string Nome { get; set; }
+
+        [Required] public string Sobrenome { get; set; }
+
+
+        [Required] public string Email { get; set; }
+
+        public ICollection<Telefone> Telefones { get; set; }
+
         public Funcionario Lider { get; set; }
 
-        [Required]
-        public String Senha { get; set; }
-        
-        [Required]
-        public String Salt { get; set; }
-        
-        [Required]
-        public DateTime DataCadastro { get; set; }
+        [Required] public string Senha { get; set; }
 
+        [Required] public string Salt { get; set; }
+
+        [Required] public DateTime DataCadastro { get; set; }
     }
-    
+
     public class Telefone
     {
         /**
@@ -40,9 +33,8 @@ namespace rh_admin.Models
          */
         [RegularExpression("\\d{10,11}")]
         [Key]
-        public String Numero { get; set; }
-        [Required]
-        public Funcionario Funcionario { get; set; }
-        
+        public string Numero { get; set; }
+
+        [Required] public Funcionario Funcionario { get; set; }
     }
 }

@@ -28,6 +28,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$APPLICATION_CONFIG_DIR$/consoles/db/53627090-6765-495e-839c-4135400f3fbe/console_5.sql">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../rh-admi/TestRhAdmin/PasswordHashTest.cs">
           <value>
             <set />
@@ -39,6 +44,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/Controllers/FuncionarioController.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/Dtos/ErrorDto.cs">
           <value>
             <set />
           </value>
@@ -64,6 +74,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/Models/Funcionario.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/README.MD">
           <value>
             <set />
           </value>
@@ -103,6 +118,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Services/FuncionarioService.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/Startup.cs">
           <value>
             <set />
@@ -134,6 +154,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/appsettings.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/global.json">
           <value>
             <set />
           </value>

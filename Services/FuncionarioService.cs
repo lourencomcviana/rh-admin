@@ -1,22 +1,22 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Internal;
-using AutoMapper.QueryableExtensions;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore;
+using rh_admin.Dtos;
 using rh_admin.Exceptions;
 using rh_admin.Models;
+using rh_admin.Repositorys;
 
-namespace rh_admin.Repositorys
+namespace rh_admin.Services
 {
-    public class FuncionarioService 
+    public class FuncionarioService
     {
         private readonly IFuncionarioRepository _repository;
         private readonly ITelefoneRepository _telefoneRepository;
+
+        private readonly MapperConfiguration mapperConfiguration = MapperConfigurationFactory();
 
         public FuncionarioService(IFuncionarioRepository repository, ITelefoneRepository telefoneRepository)
         {
@@ -24,17 +24,16 @@ namespace rh_admin.Repositorys
             _telefoneRepository = telefoneRepository;
         }
 
-        private MapperConfiguration mapperConfiguration = MapperConfigurationFactory();
         public Mapper Mapper
         {
             get
             {
-                Mapper mapper = new Mapper(mapperConfiguration);
+                var mapper = new Mapper(mapperConfiguration);
                 return mapper;
             }
         }
 
-        public async Task<Funcionario> Get(String numero)
+        public async Task<Funcionario> Get(string numero)
         {
             return await _repository.FindById(numero);
         }
@@ -43,75 +42,80 @@ namespace rh_admin.Repositorys
         {
             return await _repository.FindAll();
         }
-        
+
         public async Task<List<Funcionario>> Filter(FuncionarioQueryDto funcionarioQueryDto)
         {
             return await _repository.Filter(funcionarioQueryDto);
         }
 
-        public async  Task<Funcionario> Create (FuncionarioCreateDto funcionarioDto)
+        public async Task<Funcionario> Create(FuncionarioCreateDto funcionarioDto)
         {
             if (await _repository.ExistsAsync(funcionarioDto.NumeroChapa))
-            {
-                throw  new ExistsOrNotException($"{funcionarioDto.NumeroChapa} já exisete");
-            }
-            
-            
+                throw new ExistsOrNotException($"{funcionarioDto.NumeroChapa} já exisete");
+
+
             var funcionario = Mapper.Map<Funcionario>(funcionarioDto);
-            HashSalt hashSalt =  Util.hashPassword(funcionarioDto.Senha);
 
-            // sets especificios para o cadastro
-            funcionario.Senha = hashSalt.Hash;
-            funcionario.Salt = hashSalt.Salt;
-            funcionario.DataCadastro = DateTime.Now;
-            
-            if (funcionario.Lider != null)
-            { 
-                Funcionario lider = await _repository.FindById(funcionario.Lider.NumeroChapa);
-                if (lider == null)
-                {
-                    throw  new ExistsOrNotException($"líder {funcionario.Lider.NumeroChapa} não existe");
-                }
-
-                funcionario.Lider = lider;
-
-            }
+            await AssociarLider(funcionario);
             DesagregarTelefones(funcionario.Telefones);
 
             await _repository.CreateAsync(funcionario);
 
             return funcionario;
         }
-        
-        public async  Task<Funcionario> Update<T> (T funcionarioDto)
+
+        public async Task<Funcionario> Update<T>(T funcionarioDto)
             where T : FuncionarioDto
         {
             if (!await _repository.ExistsAsync(funcionarioDto.NumeroChapa))
-            {
-                throw  new ExistsOrNotException($"{funcionarioDto.NumeroChapa} não exisete");
-            }
+                throw new ExistsOrNotException($"{funcionarioDto.NumeroChapa} não exisete");
             // Antes de recuperar funcionário e realizar mapeamento!
             DesagregarTelefones(funcionarioDto.Telefone);
-            
-            Funcionario funcionarioExistente = await Get(funcionarioDto.NumeroChapa);
-            Funcionario funcionario= Mapper.Map<FuncionarioDto,Funcionario>(funcionarioDto,funcionarioExistente);
-            
+
+            var funcionarioExistente = await Get(funcionarioDto.NumeroChapa);
+            var funcionario = Mapper.Map<FuncionarioDto, Funcionario>(funcionarioDto, funcionarioExistente);
+            await AssociarLider(funcionario);
             await _repository.UpdateAsync(funcionario);
             return funcionario;
         }
-        
 
-        public async Task<Boolean> Delete(String key)
+
+        public async Task<bool> Delete(string key)
         {
-            Funcionario funcionario = await Get(key);
-            if (funcionario == null)
-            {
-                return false;
-            }
+            var funcionario = await Get(key);
+            if (funcionario == null) return false;
 
-            await _repository.DeleteAsync(key);
+            DesassociarSuditos(key);
+
+            await _repository.DeleteAsync(funcionario);
 
             return true;
+        }
+
+        private async Task AssociarLider(Funcionario funcionario)
+        {
+            if (funcionario.Lider != null)
+            {
+                var lider = await _repository.FindById(funcionario.Lider.NumeroChapa);
+                if (lider == null) throw new ExistsOrNotException($"líder {funcionario.Lider.NumeroChapa} não existe");
+
+                funcionario.Lider = lider;
+            }
+        }
+
+        private async void DesassociarSuditos(string key)
+        {
+            var suditos = await _repository.Filter(
+                new FuncionarioQueryDto {Lider = key}
+            );
+
+            if (suditos.Count > 0)
+                // desassociar todos os suditos
+                suditos.ForAll(async item =>
+                {
+                    item.Lider = null;
+                    await _repository.UpdateAsync(item);
+                });
         }
 
         private void DesagregarTelefones(IEnumerable<Telefone> telefones)
@@ -119,54 +123,50 @@ namespace rh_admin.Repositorys
             telefones
                 .ForAll(
                     async telefone =>
-                        await  _telefoneRepository.DeleteAsync(telefone.Numero)
-                    );
+                        await _telefoneRepository.DeleteAsync(telefone.Numero)
+                );
         }
-        private void DesagregarTelefones(List<String> telefones)
+
+        private void DesagregarTelefones(List<string> telefones)
         {
             telefones
                 .ForAll(
                     async telefone =>
-                        await  _telefoneRepository.DeleteAsync(telefone)
+                        await _telefoneRepository.DeleteAsync(telefone)
                 );
         }
-        
+
         public static void AddMappings(IMapperConfigurationExpression cfg)
         {
-            cfg.CreateMap<Funcionario,FuncionarioDto>()
+            cfg.CreateMap<Funcionario, FuncionarioDto>()
                 .ForMember(
                     dest => dest.Lider,
                     opt =>
                     {
-                        opt.MapFrom((item, funcionario) => {
-                            if (item.Lider != null)
-                            {
-                                return item.Lider.NumeroChapa;
-                            }
+                        opt.MapFrom((item, funcionario) =>
+                        {
+                            if (item.Lider != null) return item.Lider.NumeroChapa;
 
                             return null;
                         });
                     })
                 ;
-            
+
             cfg.CreateMap<Funcionario, FuncionarioRetornoDto>()
                 .IncludeBase<Funcionario, FuncionarioDto>()
                 ;
-            
+
             cfg.CreateMap<FuncionarioDto, Funcionario>()
                 .ForMember(
                     dest => dest.DataCadastro,
-                    opt =>
-                    {
-                        opt.MapFrom(item => DateTime.Now);
-                    })
+                    opt => { opt.MapFrom(item => DateTime.Now); })
                 .ForMember(
                     dest => dest.Telefones,
                     opt =>
                     {
                         opt.MapFrom((item, funcionario) =>
                             item.Telefone
-                                .Select(numero => new Telefone() {Numero = numero, Funcionario = funcionario})
+                                .Select(numero => new Telefone {Numero = numero, Funcionario = funcionario})
                                 .ToList()
                         );
                     })
@@ -176,27 +176,31 @@ namespace rh_admin.Repositorys
                     {
                         opt.MapFrom((item, funcionario) =>
                         {
-                            if (item.Lider == null)
-                            {
-                                return null;
-                            }
-                            return new Funcionario()
+                            if (item.Lider == null) return null;
+                            return new Funcionario
                             {
                                 NumeroChapa = item.Lider
                             };
                         });
                     })
-              
                 ;
 
             cfg.CreateMap<FuncionarioCreateDto, Funcionario>()
-                .IncludeBase<FuncionarioDto, Funcionario>();
+                .IncludeBase<FuncionarioDto, Funcionario>()
+                .AfterMap((funcionarioDto, funcionario) =>
+                {
+                    var hashSalt = Util.hashPassword(funcionarioDto.Senha);
+
+                    // sets especificios para o cadastro
+                    funcionario.Senha = hashSalt.Hash;
+                    funcionario.Salt = hashSalt.Salt;
+                    funcionario.DataCadastro = DateTime.Now;
+                });
         }
-        
+
         private static MapperConfiguration MapperConfigurationFactory()
         {
             return new MapperConfiguration(AddMappings);
         }
     }
-    
 }

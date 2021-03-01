@@ -1,6 +1,8 @@
+using System;
+
 namespace rh_admin.Exceptions
 {
-    public class ExistsOrNotException : System.Exception
+    public class ExistsOrNotException : Exception
     {
         public ExistsOrNotException()
         {

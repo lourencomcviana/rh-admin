@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using rh_admin.Dtos;
 using rh_admin.Exceptions;
-using rh_admin.Models;
-using rh_admin.Repositorys;
+using rh_admin.Services;
 
 namespace rh_admin.Controllers
 {
@@ -14,8 +13,9 @@ namespace rh_admin.Controllers
     [Route("[controller]")]
     public class FuncionarioController : ControllerBase
     {
-        private readonly ILogger<FuncionarioController> _logger;
         private readonly FuncionarioService _funcionarioService;
+        private readonly ILogger<FuncionarioController> _logger;
+
         public FuncionarioController(ILogger<FuncionarioController> logger, FuncionarioService service)
         {
             _logger = logger;
@@ -29,30 +29,24 @@ namespace rh_admin.Controllers
                 .Select(item => _funcionarioService.Mapper.Map<FuncionarioRetornoDto>(item))
                 .ToList();
 
-            if (list.Count == 0)
-            {
-                return NoContent();
-            }
+            if (list.Count == 0) return NoContent();
 
             return list;
         }
-        
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<FuncionarioRetornoDto>> GetOne(String id)
+        public async Task<ActionResult<FuncionarioRetornoDto>> GetOne(string id)
         {
-            FuncionarioRetornoDto funcionarioRetorno = _funcionarioService
+            var funcionarioRetorno = _funcionarioService
                 .Mapper.Map<FuncionarioRetornoDto>(
                     await _funcionarioService.Get(id)
                 );
 
-            if (funcionarioRetorno == null)
-            {
-                return NotFound();
-            }
-            
+            if (funcionarioRetorno == null) return NotFound();
+
             return funcionarioRetorno;
         }
-        
+
         [HttpPost]
         public async Task<ActionResult<FuncionarioRetornoDto>> PostFuncionario(FuncionarioCreateDto funcionarioDto)
         {
@@ -62,14 +56,16 @@ namespace rh_admin.Controllers
                     .Mapper.Map<FuncionarioRetornoDto>(
                         await _funcionarioService.Create(funcionarioDto)
                     );
-                return CreatedAtAction(nameof(GetOne), new { id = funcionarioRetorno.NumeroChapa }, funcionarioRetorno);
+                return CreatedAtAction(nameof(GetOne), new {id = funcionarioRetorno.NumeroChapa}, funcionarioRetorno);
             }
             catch (ExistsOrNotException e)
             {
-                return BadRequest(e.Message);
+                
+                _logger.LogError(e,"não foi possivel realizar o cadastro");
+                return BadRequest(new ErrorDto(){Message = e.Message});
             }
         }
-        
+
         [HttpPut]
         public async Task<ActionResult> PutFuncionario(FuncionarioDto funcionarioDto)
         {
@@ -80,18 +76,16 @@ namespace rh_admin.Controllers
             }
             catch (ExistsOrNotException e)
             {
-                return BadRequest(e.Message);
+                _logger.LogError(e,"não foi possivel realizar o a atualização");
+                return BadRequest(new ErrorDto(){Message = e.Message});
             }
         }
-        
+
         [HttpDelete("{key}")]
-        public async Task<IActionResult> DeleteFuncionario(String key)
+        public async Task<IActionResult> DeleteFuncionario(string key)
         {
-            Boolean result = await _funcionarioService.Delete(key);
-            if (!result)
-            {
-                return NotFound();
-            }
+            var result = await _funcionarioService.Delete(key);
+            if (!result) return NotFound();
             return Ok();
         }
     }

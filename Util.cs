@@ -6,65 +6,63 @@ namespace rh_admin
 {
     public class Util
     {
-
         private Util()
         {
         }
 
         public static HashSalt hashPassword(string password)
-        {;
- 
+        {
+            ;
+
             // generate a 128-bit salt using a secure PRNG
-            byte[] salt = new byte[128 / 8];
+            var salt = new byte[128 / 8];
             using (var rng = RandomNumberGenerator.Create())
             {
                 rng.GetBytes(salt);
             }
 
-            byte[] key = KeyDerivation.Pbkdf2(
-                password: password,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8);
-                
+            var key = KeyDerivation.Pbkdf2(
+                password,
+                salt,
+                KeyDerivationPrf.HMACSHA1,
+                10000,
+                256 / 8);
+
             // derive a 256-bit subkey (use HMACSHA1 with 10,000 iterations)
-            String base64=  Convert.ToBase64String(key);
-            
+            var base64 = Convert.ToBase64String(key);
+
             /* Fetch the stored value */
-            return new HashSalt()
+            return new HashSalt
             {
                 Hash = base64,
-                Salt =  Convert.ToBase64String(salt)
+                Salt = Convert.ToBase64String(salt)
             };
         }
 
-        public static Boolean check(String userEnteredPassword, HashSalt hashSalt)
+        public static bool check(string userEnteredPassword, HashSalt hashSalt)
         {
-            return check(userEnteredPassword,hashSalt.Salt,hashSalt.Hash);
+            return check(userEnteredPassword, hashSalt.Salt, hashSalt.Hash);
         }
 
-        public static Boolean check(String userEnteredPassword, String passwordSalt, String passwordHash)
+        public static bool check(string userEnteredPassword, string passwordSalt, string passwordHash)
         {
-
-            string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: userEnteredPassword,
-                salt: System.Convert.FromBase64String(passwordSalt),///Encoding.ASCII.GetBytes(dbPasswordSalt),
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8));
-            Console.WriteLine(hashedPassword.ToString());
+            var hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                userEnteredPassword,
+                Convert.FromBase64String(passwordSalt), ///Encoding.ASCII.GetBytes(dbPasswordSalt),
+                KeyDerivationPrf.HMACSHA1,
+                10000,
+                256 / 8));
+            Console.WriteLine(hashedPassword);
             return passwordHash == hashedPassword;
         }
-        
-        
     }
 
     public class HashSalt
     {
-        public String Hash { get; set; }
-        public String Salt { get; set; }
+        public string Hash { get; set; }
+        public string Salt { get; set; }
     }
+
     //
     // public sealed class PasswordHasher : IPasswordHasher
     // {

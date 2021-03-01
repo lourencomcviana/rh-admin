@@ -8,28 +8,28 @@ namespace rh_admin.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "LiderNumeroChapa",
-                table: "Funcionarios",
-                type: "TEXT",
+                "LiderNumeroChapa",
+                "Funcionarios",
+                "TEXT",
                 nullable: true);
 
             migrationBuilder.UpdateData(
-                table: "Funcionarios",
-                keyColumn: "NumeroChapa",
-                keyValue: "11",
-                column: "DataCadastro",
-                value: new DateTime(2021, 2, 28, 20, 53, 25, 331, DateTimeKind.Local).AddTicks(1293));
+                "Funcionarios",
+                "NumeroChapa",
+                "11",
+                "DataCadastro",
+                new DateTime(2021, 2, 28, 20, 53, 25, 331, DateTimeKind.Local).AddTicks(1293));
 
             migrationBuilder.CreateIndex(
-                name: "IX_Funcionarios_LiderNumeroChapa",
-                table: "Funcionarios",
-                column: "LiderNumeroChapa");
+                "IX_Funcionarios_LiderNumeroChapa",
+                "Funcionarios",
+                "LiderNumeroChapa");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Funcionarios_Funcionarios_LiderNumeroChapa",
-                table: "Funcionarios",
-                column: "LiderNumeroChapa",
-                principalTable: "Funcionarios",
+                "FK_Funcionarios_Funcionarios_LiderNumeroChapa",
+                "Funcionarios",
+                "LiderNumeroChapa",
+                "Funcionarios",
                 principalColumn: "NumeroChapa",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -37,23 +37,23 @@ namespace rh_admin.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Funcionarios_Funcionarios_LiderNumeroChapa",
-                table: "Funcionarios");
+                "FK_Funcionarios_Funcionarios_LiderNumeroChapa",
+                "Funcionarios");
 
             migrationBuilder.DropIndex(
-                name: "IX_Funcionarios_LiderNumeroChapa",
-                table: "Funcionarios");
+                "IX_Funcionarios_LiderNumeroChapa",
+                "Funcionarios");
 
             migrationBuilder.DropColumn(
-                name: "LiderNumeroChapa",
-                table: "Funcionarios");
+                "LiderNumeroChapa",
+                "Funcionarios");
 
             migrationBuilder.UpdateData(
-                table: "Funcionarios",
-                keyColumn: "NumeroChapa",
-                keyValue: "11",
-                column: "DataCadastro",
-                value: new DateTime(2021, 2, 27, 16, 21, 7, 654, DateTimeKind.Local).AddTicks(1265));
+                "Funcionarios",
+                "NumeroChapa",
+                "11",
+                "DataCadastro",
+                new DateTime(2021, 2, 27, 16, 21, 7, 654, DateTimeKind.Local).AddTicks(1265));
         }
     }
 }

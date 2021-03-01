@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using rh_admin.Models;
 using rh_admin.Repositorys;
+using rh_admin.Services;
 
 namespace rh_admin
 {
@@ -25,15 +26,15 @@ namespace rh_admin
         {
             services.AddControllers();
 
-            services.AddSwaggerGen(c => {
-
+            services.AddSwaggerGen(c =>
+            {
                 c.SwaggerDoc("v1",
-                    new OpenApiInfo()
+                    new OpenApiInfo
                     {
                         Title = "Aplicação de exemplo para gestão de funcionários",
                         Version = "v1",
                         Description = "Exemplo de API REST criada para gerir funcionários",
-                        Contact = new OpenApiContact()
+                        Contact = new OpenApiContact
                         {
                             Name = "Lourenço Viana",
                             Email = "lourenco.m.c.viana@gmail.com",
@@ -41,39 +42,34 @@ namespace rh_admin
                         }
                     });
             });
-            
-            services.AddDbContext<FuncionarioContext>(options => options.UseSqlite(Configuration.GetConnectionString("db")));          
-           
+
+            services.AddDbContext<FuncionarioContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("db")));
+
             services.AddScoped<IGenericRepository, GenericGenericRepository<FuncionarioContext>>();
-            
-            services.AddTransient<IRepository<Funcionario,String>, Repository<Funcionario,String>>();
-            
+
+            services.AddTransient<IRepository<Funcionario, string>, Repository<Funcionario, string>>();
+
             services.AddTransient<IFuncionarioRepository, FuncionarioRepository>();
             services.AddTransient<ITelefoneRepository, TelefoneRepository>();
             services.AddTransient<FuncionarioService>();
-            
-            services.AddControllers().AddJsonOptions(options => {
+
+            services.AddControllers().AddJsonOptions(options =>
+            {
                 options.JsonSerializerOptions.IgnoreNullValues = true;
             });
-            
-          
         }
-        
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "gestão de funcionários v1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "gestão de funcionários v1"); });
 
-            
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
