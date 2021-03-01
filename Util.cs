@@ -11,12 +11,7 @@ namespace rh_admin
         {
         }
 
-        // public static void main(String[] args)
-        // {
-        //    String hashed = hashPassword("1234");
-        //    check("1234", hashed);
-        // }
-        public static String hashPassword(string password)
+        public static HashSalt hashPassword(string password)
         {;
  
             // generate a 128-bit salt using a secure PRNG
@@ -25,33 +20,50 @@ namespace rh_admin
             {
                 rng.GetBytes(salt);
             }
- 
-            // derive a 256-bit subkey (use HMACSHA1 with 10,000 iterations)
-            return  Convert.ToBase64String(KeyDerivation.Pbkdf2(
+
+            byte[] key = KeyDerivation.Pbkdf2(
                 password: password,
                 salt: salt,
                 prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 100000,
-                numBytesRequested: 256 / 8));
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8);
+                
+            // derive a 256-bit subkey (use HMACSHA1 with 10,000 iterations)
+            String base64=  Convert.ToBase64String(key);
             
             /* Fetch the stored value */
-            
+            return new HashSalt()
+            {
+                Hash = base64,
+                Salt =  Convert.ToBase64String(salt)
+            };
         }
 
-        private static Boolean check(String password, String savedPasswordHash)
+        public static Boolean check(String userEnteredPassword, HashSalt hashSalt)
+        {
+            return check(userEnteredPassword,hashSalt.Salt,hashSalt.Hash);
+        }
+
+        public static Boolean check(String userEnteredPassword, String passwordSalt, String passwordHash)
         {
 
-            byte[] hashBytes = Convert.FromBase64String(savedPasswordHash);
-
-            byte[] salt = new byte[128 / 8];
-            Array.Copy(hashBytes, 0, salt, 0, 16);
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100000);
-            byte[] hash = pbkdf2.GetBytes(20);
-            for (int i=0; i < 20; i++)
-                if (hashBytes[i+16] != hash[i])
-                    return false;
-            return true;
+            string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: userEnteredPassword,
+                salt: System.Convert.FromBase64String(passwordSalt),///Encoding.ASCII.GetBytes(dbPasswordSalt),
+                prf: KeyDerivationPrf.HMACSHA1,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8));
+            Console.WriteLine(hashedPassword.ToString());
+            return passwordHash == hashedPassword;
         }
+        
+        
+    }
+
+    public class HashSalt
+    {
+        public String Hash { get; set; }
+        public String Salt { get; set; }
     }
     //
     // public sealed class PasswordHasher : IPasswordHasher

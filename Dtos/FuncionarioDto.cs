@@ -48,7 +48,7 @@ namespace rh_admin
         public DateTime DataCadastro { get; protected set; }
     }
     
-    public class FuncionarioSenhaDto : FuncionarioDto
+    public class FuncionarioCreateDto : FuncionarioDto
     {
         [Required] public String Senha { get; set; }
 

@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using rh_admin.Repositorys;
 
 namespace rh_admin.Migrations
 {
     [DbContext(typeof(FuncionarioContext))]
-    partial class FuncionarioContextModelSnapshot : ModelSnapshot
+    [Migration("20210301012816_AdicionaSenha")]
+    partial class AdicionaSenha
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

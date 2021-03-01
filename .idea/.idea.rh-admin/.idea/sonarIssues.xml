@@ -23,6 +23,21 @@
             <set />
           </value>
         </entry>
+        <entry key="$APPLICATION_CONFIG_DIR$/consoles/db/53627090-6765-495e-839c-4135400f3fbe/console_4.sql">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../rh-admi/TestRhAdmin/PasswordHashTest.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../rh-admi/TestRhAdmin/UnitTest1.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/Controllers/FuncionarioController.cs">
           <value>
             <set />
@@ -89,6 +104,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/Startup.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/TestRhAdmin/PasswordTest.cs">
           <value>
             <set />
           </value>

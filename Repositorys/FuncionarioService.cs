@@ -49,8 +49,7 @@ namespace rh_admin.Repositorys
             return await _repository.Filter(funcionarioQueryDto);
         }
 
-        public async  Task<Funcionario> Create<T> (T funcionarioDto)
-            where T : FuncionarioDto
+        public async  Task<Funcionario> Create (FuncionarioCreateDto funcionarioDto)
         {
             if (await _repository.ExistsAsync(funcionarioDto.NumeroChapa))
             {
@@ -59,6 +58,12 @@ namespace rh_admin.Repositorys
             
             
             var funcionario = Mapper.Map<Funcionario>(funcionarioDto);
+            HashSalt hashSalt =  Util.hashPassword(funcionarioDto.Senha);
+
+            // sets especificios para o cadastro
+            funcionario.Senha = hashSalt.Hash;
+            funcionario.Salt = hashSalt.Salt;
+            funcionario.DataCadastro = DateTime.Now;
             
             if (funcionario.Lider != null)
             { 
@@ -71,12 +76,8 @@ namespace rh_admin.Repositorys
                 funcionario.Lider = lider;
 
             }
-            
             DesagregarTelefones(funcionario.Telefones);
-            
-            
-            
-            funcionario.DataCadastro = DateTime.Now;
+
             await _repository.CreateAsync(funcionario);
 
             return funcionario;
@@ -147,6 +148,11 @@ namespace rh_admin.Repositorys
                         });
                     })
                 ;
+            
+            cfg.CreateMap<Funcionario, FuncionarioRetornoDto>()
+                .IncludeBase<Funcionario, FuncionarioDto>()
+                ;
+            
             cfg.CreateMap<FuncionarioDto, Funcionario>()
                 .ForMember(
                     dest => dest.DataCadastro,
@@ -169,14 +175,22 @@ namespace rh_admin.Repositorys
                     opt =>
                     {
                         opt.MapFrom((item, funcionario) =>
-                            new Funcionario() {NumeroChapa = item.Lider}
-                        );
+                        {
+                            if (item.Lider == null)
+                            {
+                                return null;
+                            }
+                            return new Funcionario()
+                            {
+                                NumeroChapa = item.Lider
+                            };
+                        });
                     })
+              
                 ;
 
-            cfg.CreateMap<Funcionario, FuncionarioRetornoDto>()
-                .IncludeBase<Funcionario, FuncionarioDto>()
-                    ;
+            cfg.CreateMap<FuncionarioCreateDto, Funcionario>()
+                .IncludeBase<FuncionarioDto, Funcionario>();
         }
         
         private static MapperConfiguration MapperConfigurationFactory()

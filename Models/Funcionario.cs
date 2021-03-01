@@ -21,20 +21,16 @@ namespace rh_admin.Models
         public ICollection<Telefone> Telefones { get; set; } 
         
         public Funcionario Lider { get; set; }
-        // não vai pro dto
+
         [Required]
-        private String Senha { get; set; }
+        public String Senha { get; set; }
+        
+        [Required]
+        public String Salt { get; set; }
+        
         [Required]
         public DateTime DataCadastro { get; set; }
 
-            /**
-             Nome e Sobrenome (obrigatório);
-- E-mail válido corporativo (obrigatório);
-- Número de chapa (único e obrigatório);
-- Telefone (não obrigatório / pode ter mais do que 1);
-- Nome do Líder (*um líder também é um funcionário);
-- Senha (deve ser armazenada criptografada)
-             */
     }
     
     public class Telefone

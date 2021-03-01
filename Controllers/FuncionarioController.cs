@@ -54,7 +54,7 @@ namespace rh_admin.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<FuncionarioRetornoDto>> PostFuncionario(FuncionarioDto funcionarioDto)
+        public async Task<ActionResult<FuncionarioRetornoDto>> PostFuncionario(FuncionarioCreateDto funcionarioDto)
         {
             try
             {
