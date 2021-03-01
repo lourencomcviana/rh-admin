@@ -1,0 +1,13 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/projectSettingsUpdater.xml
+/contentModel.xml
+/.idea.rh-admin.iml
+/modules.xml
+# Datasource local storage ignored files
+/../../../../../../../:\workspace\.net\rh-admin\.idea\.idea.rh-admin\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
