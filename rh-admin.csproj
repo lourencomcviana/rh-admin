@@ -22,11 +22,5 @@
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.0.0-rc2" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Compile Update="TestRhAdmin\UnitTest1.cs">
-        <Link>TestProject1\UnitTest1.cs</Link>
-      </Compile>
-    </ItemGroup>
-
 
 </Project>

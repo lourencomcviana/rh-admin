@@ -60,9 +60,8 @@ namespace rh_admin.Controllers
             }
             catch (ExistsOrNotException e)
             {
-                
-                _logger.LogError(e,"não foi possivel realizar o cadastro");
-                return BadRequest(new ErrorDto(){Message = e.Message});
+                _logger.LogError(e, "não foi possivel realizar o cadastro");
+                return BadRequest(new ErrorDto {Message = e.Message});
             }
         }
 
@@ -76,8 +75,8 @@ namespace rh_admin.Controllers
             }
             catch (ExistsOrNotException e)
             {
-                _logger.LogError(e,"não foi possivel realizar o a atualização");
-                return BadRequest(new ErrorDto(){Message = e.Message});
+                _logger.LogError(e, "não foi possivel realizar o a atualização");
+                return BadRequest(new ErrorDto {Message = e.Message});
             }
         }
 
