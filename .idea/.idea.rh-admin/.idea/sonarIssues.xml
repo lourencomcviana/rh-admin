@@ -48,6 +48,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Controllers/HomeController.cs">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/Dtos/ErrorDto.cs">
           <value>
             <set />
@@ -159,6 +164,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/global.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/rh-admin.sln">
           <value>
             <set />
           </value>
